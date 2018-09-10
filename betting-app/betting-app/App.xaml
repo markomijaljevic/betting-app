@@ -4,7 +4,7 @@
              xmlns:local="clr-namespace:betting_app"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-      
+        
         <Style TargetType="DataGridRow">
             <Setter Property="Background" Value="#e6ffcc"></Setter>
             <Setter Property="Height" Value="25"></Setter>
@@ -18,7 +18,7 @@
         <Style TargetType="DataGrid">
             <Setter Property="HorizontalGridLinesBrush" Value="#d9d9d9"></Setter>
             <Setter Property="VerticalGridLinesBrush" Value="#d9d9d9"></Setter>
-            <Setter Property="Background" Value="#e6ffcc"></Setter>
+            <Setter Property="Background" Value="#f3ffe6"></Setter>
             <Setter Property="CanUserAddRows" Value="False"></Setter>
             <Setter Property="CanUserDeleteRows" Value="False"></Setter>
             <Setter Property="CanUserReorderColumns" Value="False"></Setter>
@@ -27,6 +27,12 @@
             <Setter Property="CanUserResizeColumns" Value="False"></Setter>
             <Setter Property="AutoGenerateColumns" Value="False"></Setter>
             <Setter Property="IsReadOnly" Value="True"></Setter>
+            <Setter Property="HeadersVisibility" Value="Column"></Setter>
+        </Style>
+        
+        <Style TargetType="StackPanel">
+            <Setter Property="Margin" Value="30"></Setter>
+            <Setter Property="Background" Value="WhiteSmoke"></Setter>
         </Style>
 
     </Application.Resources>

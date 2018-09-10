@@ -3,8 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:betting_app"
         mc:Ignorable="d"
+        xmlns:local="clr-namespace:betting_app"
         Title="Betting-app" Height="350" Width="525"
         WindowState="Maximized">
 
@@ -16,9 +16,12 @@
 
         <Border Background="#f3ffe6" Grid.Column="0">
             <DataGrid x:Name="dataGrid"
-                      ItemsSource="{Binding}" >
+                      ItemsSource="{Binding match}"
+                      SelectedIndex="{Binding Path=selectedIndex, Mode=OneWay}"
+                      SelectionUnit="Cell">
 
                 <DataGrid.Columns>
+
                     <DataGridTextColumn Binding="{Binding home_team}"
                                         Width="8*"/>
 
@@ -27,7 +30,8 @@
 
                     <DataGridTextColumn Binding="{Binding home_team_odds }" 
                                         Header="1"
-                                        Width="*"/>
+                                        Width="*"
+                                        />
 
                     <DataGridTextColumn Binding="{Binding even_odds }" 
                                         Header="X"
@@ -53,12 +57,18 @@
                                         Header="f+2"
                                         Width="*"/>
 
-                </DataGrid.Columns>
+
+                    </DataGrid.Columns>
             </DataGrid>
         </Border>
-        
-        <Border Background="Green" Grid.Column="1"></Border>
+
+        <Border Background="#f3ffe6" Grid.Column="1">
+
+            <StackPanel>
+                <TextBlock Margin="1" FontSize="25">Your ticket</TextBlock>
+            </StackPanel>
+
+        </Border>
 
     </Grid>
-
 </Window>
