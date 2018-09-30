@@ -27,7 +27,6 @@ namespace betting_app
         public string startTime { get; set; }
         public string odds { get; set; }
         public string header { get; set; }
-        public Button removeBtn;
     }
 
 
@@ -40,6 +39,7 @@ namespace betting_app
         {
             InitializeComponent();
             Loaded += fillDataGrid;
+            Payment.TextChanged += Payment_TextChanged;
         }
 
         private void fillDataGrid(object sender, RoutedEventArgs e)
@@ -81,7 +81,7 @@ namespace betting_app
                 string odds = (DataGrid.CurrentCell.Column.GetCellContent(row) as TextBlock).Text;
                 string startTime = (DataGrid.Columns[1].GetCellContent(row) as TextBlock).Text;
                 string match = (DataGrid.Columns[0].GetCellContent(row) as TextBlock).Text;
-
+              
                 var data = new game
                 {
                     match = match,
@@ -92,9 +92,18 @@ namespace betting_app
                 };
 
                 DataGrid2.Items.Add(data);
-                
+
+                Odds.Text = ( (Double.Parse(odds)/10) * (Double.Parse(Odds.Text))).ToString();
+                Win.Text = ((Double.Parse(Odds.Text)) * (Double.Parse(Payment.Text))).ToString();
+
             }
          
+        }
+
+        private void Payment_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if(!(string.IsNullOrWhiteSpace(((TextBox)sender).Text)))
+                Win.Text = (Double.Parse(((TextBox)sender).Text) * Double.Parse(Odds.Text)).ToString();
         }
     }//end of class
 }//end of namespace
