@@ -81,7 +81,13 @@ namespace betting_app
                 string odds = (DataGrid.CurrentCell.Column.GetCellContent(row) as TextBlock).Text;
                 string startTime = (DataGrid.Columns[1].GetCellContent(row) as TextBlock).Text;
                 string match = (DataGrid.Columns[0].GetCellContent(row) as TextBlock).Text;
-              
+
+                if (String.IsNullOrEmpty(odds))
+                    return;
+
+                if (exists(match, header, odds))
+                    return;
+
                 var data = new game
                 {
                     match = match,
@@ -95,9 +101,7 @@ namespace betting_app
 
                 Odds.Text = ( (Double.Parse(odds)/10) * (Double.Parse(Odds.Text))).ToString();
                 Win.Text = ((Double.Parse(Odds.Text)) * (Double.Parse(Payment.Text))).ToString();
-
             }
-         
         }
 
         private void Payment_TextChanged(object sender, TextChangedEventArgs e)
@@ -105,6 +109,37 @@ namespace betting_app
             if(!(string.IsNullOrWhiteSpace(((TextBox)sender).Text)))
                 Win.Text = (Double.Parse(((TextBox)sender).Text) * Double.Parse(Odds.Text)).ToString();
         }
+
+        private bool exists(string match,string header, string odds)
+        {
+            foreach(game item in DataGrid2.Items)
+            {
+                if (item.match == match)
+                {
+                    if (item.header == header)
+                    {
+                        Odds.Text = (( Double.Parse(Odds.Text) ) / ( Double.Parse(odds) / 10 )).ToString();
+                        Win.Text = ((Double.Parse(Odds.Text)) * (Double.Parse(Payment.Text))).ToString();
+                        DataGrid2.Items.Remove(item);
+                    }
+                    else
+                    {
+                        Odds.Text = ((Double.Parse(Odds.Text)) / (Double.Parse(item.odds) / 10)).ToString();
+                        Odds.Text = ((Double.Parse(Odds.Text)) * (Double.Parse(odds) / 10)).ToString();
+                        Win.Text = ((Double.Parse(Odds.Text)) * (Double.Parse(Payment.Text))).ToString();
+                        item.odds = odds;
+                        item.header = header;
+                        DataGrid2.Items.Refresh();
+                    }
+
+                    return true;
+                }
+            }
+            return false;
+        }
+
+
+
     }//end of class
 }//end of namespace
 
