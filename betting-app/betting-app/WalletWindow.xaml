@@ -1,0 +1,29 @@
+﻿<Window x:Class="betting_app.WalletWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:betting_app"
+        mc:Ignorable="d"
+        Title="WalletWindow" Height="500" Width="1000"
+        MinHeight="500"
+        MinWidth="1000"
+        WindowStartupLocation="CenterScreen">
+    <Grid>
+        <StackPanel x:Name="stackPanel">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock FontSize="26"> Stanje Novčanika:</TextBlock>
+                <TextBlock x:Name="money"
+                           FontSize="26"
+                           FontWeight="Bold"
+                           Margin="10 0 10 0"> 50 </TextBlock>
+                <TextBlock FontSize="26"> Kn</TextBlock>
+                
+            </StackPanel>
+            <Separator></Separator>
+            <TextBlock FontSize="18"
+                       FontWeight="Bold">Odigrani Listići</TextBlock>
+            <Separator></Separator>
+        </StackPanel>
+    </Grid>
+</Window>

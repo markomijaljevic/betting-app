@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Collections.ObjectModel;
+using System.Text.RegularExpressions;
 
 namespace betting_app
 {
@@ -27,19 +28,23 @@ namespace betting_app
         public string startTime { get; set; }
         public string odds { get; set; }
         public string header { get; set; }
+        public int? category { get; set; }
     }
 
 
     public partial class MainWindow : Window
     {
+        private static readonly Regex _regex = new Regex("[^0-9.-]+");
         private ObservableCollection<table_match> matches;
         private databaseEntities context;
+        private WalletWindow wallet;
 
         public MainWindow()
         {
             InitializeComponent();
             Loaded += fillDataGrid;
             Payment.TextChanged += Payment_TextChanged;
+            wallet = new WalletWindow();
         }
 
         private void fillDataGrid(object sender, RoutedEventArgs e)
@@ -60,8 +65,8 @@ namespace betting_app
                          home_team_or_even_odds = match.home_team_or_even_odds,
                          away_team_or_even_odds = match.away_team_or_even_odds,
                          home_or_away_team_odds = match.home_or_away_team_odds,
-                         handicap_odds = match.handicap_odds
-                         
+                         handicap_odds = match.handicap_odds,
+                         category_id = match.category_id
                     });
             }
             DataGrid.ItemsSource = matches;
@@ -71,9 +76,8 @@ namespace betting_app
         {
             int columnIndex = ((DataGrid)sender).CurrentCell.Column.DisplayIndex;
 
-            if (columnIndex > 1)
+            if (columnIndex > 1 && DataGrid2.Items.Count < 20)
             {
-              
                 int index = DataGrid.Items.IndexOf(DataGrid.CurrentItem);
                 DataGridRow row = (DataGridRow)DataGrid.ItemContainerGenerator.ContainerFromIndex(index);
 
@@ -81,6 +85,7 @@ namespace betting_app
                 string odds = (DataGrid.CurrentCell.Column.GetCellContent(row) as TextBlock).Text;
                 string startTime = (DataGrid.Columns[1].GetCellContent(row) as TextBlock).Text;
                 string match = (DataGrid.Columns[0].GetCellContent(row) as TextBlock).Text;
+                int? category = (row.Item as table_match).category_id;
 
                 if (String.IsNullOrEmpty(odds))
                     return;
@@ -94,20 +99,39 @@ namespace betting_app
                     startTime = startTime,
                     odds = odds,
                     header = header,
-                  
+                    category = category
                 };
 
                 DataGrid2.Items.Add(data);
-
-                Odds.Text = ( (Double.Parse(odds)/10) * (Double.Parse(Odds.Text))).ToString();
+                
+                Odds.Text = ( ((Double.Parse(odds)/10) * (Double.Parse(Odds.Text)))).ToString();
                 Win.Text = ((Double.Parse(Odds.Text)) * (Double.Parse(Payment.Text))).ToString();
             }
         }
 
         private void Payment_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if(!(string.IsNullOrWhiteSpace(((TextBox)sender).Text)))
-                Win.Text = (Double.Parse(((TextBox)sender).Text) * Double.Parse(Odds.Text)).ToString();
+            string text = ((TextBox)sender).Text;
+
+            if (_regex.IsMatch(text))
+            {
+                MessageBox.Show("Unesite numeričku vrijednost");
+                ((TextBox)sender).Clear();
+                return;
+            }
+
+            if (!(string.IsNullOrWhiteSpace(((TextBox)sender).Text)))
+            {
+                if (Double.Parse(text) > Double.Parse(wallet.money.Text))
+                {
+                    MessageBox.Show("Nema te dovoljno novca za uplatu!");
+                    ((TextBox)sender).Clear();
+                    return;
+                }
+
+                Win.Text = (Double.Parse(text) * Double.Parse(Odds.Text)).ToString();
+            }
+         
         }
 
         private bool exists(string match,string header, string odds)
@@ -118,8 +142,9 @@ namespace betting_app
                 {
                     if (item.header == header)
                     {
-                        Odds.Text = (( Double.Parse(Odds.Text) ) / ( Double.Parse(odds) / 10 )).ToString();
-                        Win.Text = ((Double.Parse(Odds.Text)) * (Double.Parse(Payment.Text))).ToString();
+                        Odds.Text = ( ( Double.Parse(Odds.Text)) / ( Double.Parse(odds) / 10 ) ).ToString();
+                        Win.Text = (( Double.Parse(Odds.Text) ) * ( Double.Parse(Payment.Text) )).ToString();
+
                         DataGrid2.Items.Remove(item);
                     }
                     else
@@ -138,8 +163,17 @@ namespace betting_app
             return false;
         }
 
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            //WalletWindow wallet = new WalletWindow();
+            wallet.ShowDialog();
+        }
 
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            wallet.money.Text = (Double.Parse(wallet.money.Text) - Double.Parse(Payment.Text)).ToString();
 
+        }
     }//end of class
 }//end of namespace
 
