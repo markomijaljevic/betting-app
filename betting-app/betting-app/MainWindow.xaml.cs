@@ -38,6 +38,7 @@ namespace betting_app
         private ObservableCollection<table_match> matches;
         private databaseEntities context;
         private WalletWindow wallet;
+        private int _bonus;
 
         public MainWindow()
         {
@@ -103,7 +104,7 @@ namespace betting_app
                 };
 
                 DataGrid2.Items.Add(data);
-                
+
                 Odds.Text = ( ((Double.Parse(odds)/10) * (Double.Parse(Odds.Text)))).ToString();
                 Win.Text = ((Double.Parse(Odds.Text)) * (Double.Parse(Payment.Text))).ToString();
             }
@@ -142,9 +143,8 @@ namespace betting_app
                 {
                     if (item.header == header)
                     {
-                        Odds.Text = ( ( Double.Parse(Odds.Text)) / ( Double.Parse(odds) / 10 ) ).ToString();
-                        Win.Text = (( Double.Parse(Odds.Text) ) * ( Double.Parse(Payment.Text) )).ToString();
-
+                        Odds.Text = ( ( Double.Parse(Odds.Text) ) / ( Double.Parse(odds) / 10 ) ).ToString();
+                        Win.Text = ((Double.Parse(Odds.Text)) * (Double.Parse(Payment.Text))).ToString();
                         DataGrid2.Items.Remove(item);
                     }
                     else
@@ -165,15 +165,132 @@ namespace betting_app
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            //WalletWindow wallet = new WalletWindow();
-            wallet.ShowDialog();
+            WalletWindow newWallet = new WalletWindow(wallet);
+            newWallet.ShowDialog();
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            wallet.money.Text = (Double.Parse(wallet.money.Text) - Double.Parse(Payment.Text)).ToString();
+            if(DataGrid2.Items.Count > 0)
+            {
+                int bonus;
+                bonus = checkForBonus();
 
+                if (bonus > 0)
+                {
+                    MessageBox.Show("Ostvareni bonus iznosi ==> " + bonus.ToString());
+                    Odds.Text = (Double.Parse(Odds.Text) + bonus).ToString();
+                    Win.Text = ((Double.Parse(Odds.Text)) * (Double.Parse(Payment.Text))).ToString();
+                }
+
+                wallet.money.Text = (Double.Parse(wallet.money.Text) - Double.Parse(Payment.Text)).ToString();
+                var datagrid = new DataGrid();
+
+                datagrid.Columns.Add(new DataGridTextColumn()
+                {
+                    Header = "Utakmica",
+                    Width = new DataGridLength(200),
+                    FontSize = 12,
+                    Binding = new Binding("match")
+                });
+
+                datagrid.Columns.Add(new DataGridTextColumn()
+                {
+                    Header = "Početak",
+                    Width = new DataGridLength(100),
+                    FontSize = 12,
+                    Binding = new Binding("startTime")
+                });
+
+                datagrid.Columns.Add(new DataGridTextColumn()
+                {
+                    Header = "Tečaj",
+                    Width = new DataGridLength(100),
+                    FontSize = 12,
+                    Binding = new Binding("odds")
+                });
+
+                datagrid.Columns.Add(new DataGridTextColumn()
+                {
+                    Header = "Odigrano",
+                    Width = new DataGridLength(100),
+                    FontSize = 12,
+                    Binding = new Binding("header")
+                });
+
+                foreach (game item in DataGrid2.Items)
+                {
+                    datagrid.Items.Add(item);
+                }
+                wallet.stackPanel.Children.Add(datagrid);
+
+                TextBlock payment = new TextBlock();
+                payment.Text = "Uplata = " + Payment.Text;
+                wallet.stackPanel.Children.Add(payment);
+
+                TextBlock odds = new TextBlock();
+                odds.Text = "Ukupan Tečaj = " + Odds.Text;
+                wallet.stackPanel.Children.Add(odds);
+
+                TextBlock win = new TextBlock();
+                win.Text = "Ukupan dobitak = " + Win.Text + " Kn";
+                wallet.stackPanel.Children.Add(win);
+
+                wallet.stackPanel.Children.Add(new Separator());
+
+                MessageBox.Show("Listić je uspješno uplaćen!");
+                DataGrid2.Items.Clear();
+                Odds.Text = "1";
+                Win.Text = "1";
+                Payment.Text = "5";
+                return;
+            }
+
+            MessageBox.Show("Odigraj te bar jednu utakmicu!");
         }
+
+        private int checkForBonus()
+        {
+            int bonusCounter = 0;
+            int bonus = 0;
+            int i = 0;
+            int[] bonusCount = new int[context.Categories.Count()];
+
+            foreach (Categories cat in context.Categories)
+            {
+                foreach (game item in DataGrid2.Items)
+                {
+                    if (cat.Id == item.category)
+                    {
+                        bonusCounter++;
+                    }
+                }
+                bonusCount[i] = bonusCounter;
+                bonusCounter = 0;
+                i++;
+            }
+            i = 0;
+            foreach (int count in bonusCount)
+            {
+                if(count > 0)
+                {
+                    i++;
+                    if (count / 3 > 0)
+                    {
+                        bonus += 5 * (count / 3);
+                    }
+                }
+            }
+
+            if (i == context.Categories.Count())
+                bonus += 10;
+            
+
+            return bonus;
+        }
+
+
+
     }//end of class
 }//end of namespace
 

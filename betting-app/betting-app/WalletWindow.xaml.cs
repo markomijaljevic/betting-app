@@ -23,5 +23,9 @@ namespace betting_app
         {
             InitializeComponent();
         }
+        public WalletWindow(WalletWindow wallet)
+        {
+            this.Content = wallet.Content;
+        }
     }
 }

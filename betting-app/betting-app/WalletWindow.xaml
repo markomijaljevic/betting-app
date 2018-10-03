@@ -10,20 +10,23 @@
         MinWidth="1000"
         WindowStartupLocation="CenterScreen">
     <Grid>
-        <StackPanel x:Name="stackPanel">
-            <StackPanel Orientation="Horizontal">
-                <TextBlock FontSize="26"> Stanje Novčanika:</TextBlock>
-                <TextBlock x:Name="money"
-                           FontSize="26"
-                           FontWeight="Bold"
-                           Margin="10 0 10 0"> 50 </TextBlock>
-                <TextBlock FontSize="26"> Kn</TextBlock>
-                
+        <ScrollViewer>
+            <StackPanel x:Name="stackPanel"
+                        Width="500">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock FontSize="26"> Stanje Novčanika:</TextBlock>
+                    <TextBlock x:Name="money"
+                               FontSize="26"
+                               FontWeight="Bold"
+                               Margin="10 0 10 0"> 50</TextBlock>
+                    <TextBlock FontSize="26"> Kn</TextBlock>
+
+                </StackPanel>
+                <Separator></Separator>
+                <TextBlock FontSize="18"
+                           FontWeight="Bold">Odigrani Listići</TextBlock>
+                <Separator></Separator>
             </StackPanel>
-            <Separator></Separator>
-            <TextBlock FontSize="18"
-                       FontWeight="Bold">Odigrani Listići</TextBlock>
-            <Separator></Separator>
-        </StackPanel>
+        </ScrollViewer>
     </Grid>
 </Window>

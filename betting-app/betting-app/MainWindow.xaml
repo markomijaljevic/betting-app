@@ -21,6 +21,7 @@
                   ItemsSource="{Binding matches}"
                   AutoGenerateColumns="False"
                   SelectionUnit="Cell"
+                  SelectionMode="Single"
                   IsReadOnly ="True"
                   CanUserAddRows="False"
                   CanUserDeleteRows="False"
